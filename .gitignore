@@ -1,0 +1,10 @@
+*.[oa]
+*~
+*.bak
+~*
+*.tmp
+*.iml
+
+content/pictures
+
+.idea
