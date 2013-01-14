@@ -71,8 +71,10 @@ function put_userinfo( $html ) {
     //获得用户ID，通过用户首页的头像图片的命名得来
     $user_imgurl = $html -> find('.infobox img', 0) -> src;
     $user_imgurlinfo = explode('/', $user_imgurl);
-    $user_id = (int)strtr($user_imgurlinfo[4], array('ul' => '', '.jpg' => ''));
-
+    $user_id = (int)strtr($user_imgurlinfo[4], array('ul' => '','u' => '', '.jpg' => ''));
+    if ($user_id == '') {
+        $user_id = $user_name;
+    }
     //获取用户添加的附加信息
     $user_intro = $html -> find('.infobox .user-intro', 0) -> innertext;
     //用户级别默认为0，最高为10
@@ -83,7 +85,7 @@ function put_userinfo( $html ) {
     $user_follow = trim($user_follow);
     //被关注人数
     $user_followed = $html -> find('#friend a', -1) -> plaintext;
-    $user_followed = strtr($user_followed, array(' 被' => '', '人关注' => ''));
+    $user_followed = strtr($user_followed, array('&gt; 被' => '', '人关注' => ''));
     $user_followed = strrev((int)strrev($user_followed));
 
     //update the user information to database
@@ -125,6 +127,6 @@ function put_userinfo( $html ) {
     }
 }
 
-echo put_userinfo(html_user_name('Google.de'));
+//echo put_userinfo(html_user_name('Google.de'));
 
 ?>
