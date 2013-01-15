@@ -4,6 +4,8 @@
 ~*
 *.tmp
 *.iml
+*.zip
+*.rar
 
 content/pictures
 

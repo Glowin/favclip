@@ -18,7 +18,7 @@ function get_user_name( $url ) {
 }
 
 //根据url获取相册ID
-function get_alum( $url ) {
+function get_album( $url ) {
     if ( $url == '') return 0;
     $replace = array('http://www.douban.com/photos/album/' => '', '/' => '' );
     $id = (int) strtr($url, $replace);
@@ -48,18 +48,35 @@ function html_user_name( $user_name ) {
     return $html;
 }
 
-//根据用户user_name获取用户所有的相册页面
+//根据用户user_name获取用户所有的相册页面的地址到数组
 function html_user_album( $user_name ) {
     $url = 'http://www.douban.com/people/'. $user_name. '/photos';
+    $page_url[0] = $url;
     $html = file_get_html( $url );
-    $list_url = $html -> find('.paginator a') -> href;
-    return $list_url;
-    $album_html = array('$html');
-    $html = file_get_html( $url );
+    $link = $html -> find('.paginator a');
+    if (is_array($link))
+    foreach ($link as $li) {
+        array_push($page_url, $li -> href);
+    }
+    //上传每个页面的相册信息
+    get_album_info();
 
-    return $html;
 }
 
+//根据相册页面获得相册信息
+function get_album_info( $html) {
+    $content = $html -> find('.albumlst');
+    if (is_array($content))
+    foreach ($content as $c) {
+        $url = $c -> find('a', 0) -> href;
+        $info['album_coverid'] = get_album( $url );
+        $coverpic = $c -> find('img', 0) -> src;
+        $info['album_coverid'] = get_album( $url );
+        //echo $info['album_coverid'].'</br>';
+    }
+}
+
+get_album_info(file_get_html('http://www.douban.com/people/fugen/photos'));
 
 //上传用户信息到数据库
 function put_userinfo( $html ) {
@@ -82,7 +99,7 @@ function put_userinfo( $html ) {
     $user_imgurl = $html -> find('.infobox img', 0) -> src;
     $user_imgurlinfo = explode('/', $user_imgurl);
     $user_id = (int)strtr($user_imgurlinfo[4], array('ul' => '','u' => '', '.jpg' => ''));
-    if ($user_id == '') 
+    if ($user_id == '')
         $user_id = $user_name;
 
     //获取用户添加的附加信息
