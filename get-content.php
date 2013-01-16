@@ -48,9 +48,37 @@ function html_user_name( $user_name ) {
     return $html;
 }
 
+//根据相册页面获得相册信息
+function get_album_info( $html) {
+    $content = $html -> find('.albumlst');
+    if (is_array($content))
+    foreach ($content as $c) {
+        $url = $c -> find('a', 0) -> href;
+        $info['album_id'][] = get_album( $url );
+        $coverpic = $c -> find('img', 0) -> src;
+        $info['album_coverid'][] = get_photo( $coverpic );
+        $info['album_name'][] = $c -> find('a', 1) -> plaintext;
+        $info['album_descri'][] = $c -> find('.albumlst_descri', 0) -> plaintext;
+
+        //SHA-1保存用户的相册更改信息，$album_pl格式为“54张照片 2013-01-06创建”
+        // 如果相册更新的话，时间会发生变化，如果是第一次更新的话，字符串中的"创建"会换为"更新"
+        $album_pl = $c -> find('.pl', 0) -> plaintext;
+        $album_pl = strtr($album_pl, array("\r\n" => "", "\n" => "", "\t" => "", " " => ""));
+        $info['album_sha1'][] = sha1($info['album_id'] . $album_pl);
+        //提取相册中图片数和时间
+        $album_pl = strtr($album_pl, array('张照片' => '', '创建' => '', '更新' => ''));
+        $album_pl = explode('&nbsp;', $album_pl);
+        $info['album_photonum'][] = (int)$album_pl[0];
+        $info['album_createdtime'][] = trim($album_pl[1]);
+    }
+    return $info;
+}
+//get_album_info(file_get_html('http://www.douban.com/people/fugen/photos'));
+
 //根据用户user_name获取用户所有的相册页面的地址到数组
 function html_user_album( $user_name ) {
     $url = 'http://www.douban.com/people/'. $user_name. '/photos';
+    //获取用户所有的相册列表页面的url到数组$page_url
     $page_url[0] = $url;
     $html = file_get_html( $url );
     $link = $html -> find('.paginator a');
@@ -58,25 +86,11 @@ function html_user_album( $user_name ) {
     foreach ($link as $li) {
         array_push($page_url, $li -> href);
     }
-    //上传每个页面的相册信息
-    get_album_info();
+
+    //TDDO:上传每个页面的相册信息
 
 }
-
-//根据相册页面获得相册信息
-function get_album_info( $html) {
-    $content = $html -> find('.albumlst');
-    if (is_array($content))
-    foreach ($content as $c) {
-        $url = $c -> find('a', 0) -> href;
-        $info['album_coverid'] = get_album( $url );
-        $coverpic = $c -> find('img', 0) -> src;
-        $info['album_coverid'] = get_album( $url );
-        //echo $info['album_coverid'].'</br>';
-    }
-}
-
-get_album_info(file_get_html('http://www.douban.com/people/fugen/photos'));
+// html_user_album('fugen');
 
 //上传用户信息到数据库
 function put_userinfo( $html ) {
