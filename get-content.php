@@ -1,15 +1,29 @@
 <?php
-
-/**
- * @author Glowin
- * @copyright 2013
- */
+//============================================================+
+// File name   : get-content.php
+// Begin       : 2003-01-14
+//
+// Description : 
+//               
+// Author: Glow Chiang
+//
+// (c) Copyright:
+//               Glow Chiang
+//               www.glowface.net
+//               jiangbian66@gmail.com
+//
+// License: MIT License
+//============================================================+
 
 set_time_limit(0);
 ini_set('display_errors', 'On');
 require_once("include/simple_html_dom.php");
 
-//根据url获得用户user_name，用户的唯一标识是"user_name"
+/**
+ * 根据url获得用户user_name，用户的唯一标识是"user_name"
+ * @param  string $url 用户个人页面的链接地址，包括http://www.douban.com
+ * @return int      用户ID
+ */
 function get_user_name( $url ) {
     if ( $url == '') return 0;
     $replace = array('http://www.douban.com/people/' => '','/' => '');
@@ -17,7 +31,11 @@ function get_user_name( $url ) {
     return $user_name;
 }
 
-//根据url获取相册ID
+/**
+ * 通过用户的相册地址得到相册的ID
+ * @param  string $url 相册的链接地址，包括http://www.douban.com
+ * @return int      相册的ID
+ */
 function get_album( $url ) {
     if ( $url == '') return 0;
     $replace = array('http://www.douban.com/photos/album/' => '', '/' => '' );
@@ -25,7 +43,11 @@ function get_album( $url ) {
     return $id;
 }
 
-//根据url获取相片ID
+/**
+ * 根据url获取相片ID
+ * @param  string $url 相片的url地址
+ * @return int      相片的id
+ */
 function get_photo( $url ) {
     if ( $url == '') return 0;
     $replace = array('http://www.douban.com/photos/photo/' => '', '/' => '' );
@@ -33,7 +55,11 @@ function get_photo( $url ) {
     return $id;
 }
 
-//根据url获得说说ID
+/**
+ * 根据url获得说说的ID
+ * @param  string $url 说说的url地址
+ * @return int      说说的ID
+ */
 function get_shuoshuo( $url ) {
     if ( $url == '') return 0;
     $replace = array('http://www.douban.com/people/' => '');
@@ -41,14 +67,22 @@ function get_shuoshuo( $url ) {
     return $id;
 }
 
-//根据用户user_name获取用户首页HTML
+/**
+ * 根据用户的user_name即他的名称来得到他的首页HTML页面
+ * @param  string $user_name 用户名称
+ * @return string            用户个人首页的HTML页面
+ */
 function html_user_name( $user_name ) {
     $url = 'http://www.douban.com/people/'. $user_name. '/';
     $html = file_get_html( $url );
     return $html;
 }
 
-//根据相册页面获得相册信息
+/**
+ * 根绝相册列表页面获得相册信息
+ * @param  string $html 相册列表页面的HTML
+ * @return array       相册的信息
+ */
 function get_album_info( $html) {
     $content = $html -> find('.albumlst');
     if (is_array($content))
@@ -75,7 +109,11 @@ function get_album_info( $html) {
 }
 //get_album_info(file_get_html('http://www.douban.com/people/fugen/photos'));
 
-//根据用户user_name获取用户所有的相册页面的地址到数组
+/**
+ * 根据用户user_name来获取用户所有的相册页面的地址
+ * @param  string $user_name 用户名
+ * @return [type]            [description]
+ */
 function html_user_album( $user_name ) {
     $url = 'http://www.douban.com/people/'. $user_name. '/photos';
     //获取用户所有的相册列表页面的url到数组$page_url
@@ -92,7 +130,11 @@ function html_user_album( $user_name ) {
 }
 // html_user_album('fugen');
 
-//上传用户信息到数据库
+/**
+ * 根据用户页面的HTML来上传用户信息到数据库
+ * @param  string $html 用户页面的HTML
+ * @return none       [description]
+ */
 function put_userinfo( $html ) {
     include_once('config.php');
     $user_name = $html -> find('.infobox .pl', 0) -> find('text', 0);
@@ -241,6 +283,6 @@ function put_albuminfo( $html ) {
         echo 'the sql is '.$insert."<br />";
     }
 }
-
 //echo put_userinfo(html_user_name('Google.de'));
+
 ?>
