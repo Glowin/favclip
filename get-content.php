@@ -136,7 +136,7 @@ function html_user_album( $user_name ) {
  * @return none       [description]
  */
 function put_userinfo( $html ) {
-    include_once('config.php');
+    require_once('config.php');
     $user_name = $html -> find('.infobox .pl', 0) -> find('text', 0);
     $user_name = trim($user_name);
     $user_nickname = $html -> find('#content .info h1', 0) -> find('text', 0);
@@ -164,12 +164,12 @@ function put_userinfo( $html ) {
     $user_level = 0;
     //关注人数
     $user_follow = $html -> find('#friend .pl a', 0) -> find('text', 0);
-    $user_follow = (int)strtr($user_follow, array('全部' =>''));
-    $user_follow = trim($user_follow);
+    preg_match_all("/\d+/is",$user_follow,$user_fl);
+    $user_follow = $user_fl[0][0];
     //被关注人数
-    $user_followed = $html -> find('#friend a', -1) -> plaintext;
-    $user_followed = strtr($user_followed, array('&gt; 被' => '', '人关注' => ''));
-    $user_followed = strrev((int)strrev($user_followed));
+    $user_followed = $html -> find('.rev-link a', 0) -> plaintext;
+    preg_match_all("/\d+/is",$user_followed,$user_fled);
+    $user_followed = $user_fled[0][0];
 
     //update the user information to database
     //上传信息到数据库
@@ -207,6 +207,8 @@ function put_userinfo( $html ) {
         echo '<h1>error!</h1>';
         echo mysql_error().'<br />';
         echo 'the sql is '.$insert."<br />";
+    } else {
+        echo '用户'. $user_name .'已添加到数据库<br />';
     }
 }
 
