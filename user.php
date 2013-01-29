@@ -38,12 +38,12 @@ function check_user( $url='' ) {
     echo $sql;
     if ($r = db_query($sql, $db)) {
 
-        // if (db_fetch_array($r)) {
-        //     return 1;
-        // }
-        // else {
-        //     return 0;
-        // }
+        if (db_fetch_array($r)) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
 }
 echo check_user('http://www.douban.com/people/farmostwood/');
