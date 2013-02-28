@@ -8,6 +8,7 @@
 *.rar
 
 content/pictures
+config.php
 
 .idea
 .tags
