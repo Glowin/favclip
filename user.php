@@ -11,6 +11,7 @@
     <input type="submit" value="submit" name="submit">
 </form>
 <?php
+set_time_limit(0);
 ini_set('display_errors', 'On');
 // put_userinfo( file_get_html('http://www.douban.com/people/byvoid/') );
 // echo check_user('http://www.douban.com/people/byvoid/');
@@ -24,8 +25,6 @@ if (isset($_POST['submit'])) {
 </body>
 </html>
 <?php
-set_time_limit(0);
-
 /**
  * 检查用户的是否存在于数据库
  * @param  string $url 用户个人页面的地址
